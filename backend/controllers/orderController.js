@@ -2,6 +2,8 @@ import razorpay from 'razorpay';
 import Stripe from 'stripe';
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
+import { resetProductScores } from "../controllers/activityController.js";
+import userActivityModel from "../models/userActivityModel.js";
 
 // global variables
 const currency = 'inr'
@@ -35,6 +37,15 @@ const placeOrder = async (req, res) => {
 
         await userModel.findByIdAndUpdate(userId, { cartData: {} })
 
+        // ✅ Log order activity and reset product scores
+        const productIds = items.map(i => i._id || i.id).filter(Boolean);
+        for (const productId of productIds) {
+            try {
+                await new userActivityModel({ userId, productId, type: 'order', points: 10 }).save();
+            } catch (_) {}
+        }
+        await resetProductScores(productIds);
+
         res.json({ success: true, message: "Order Placed" })
 
     } catch (error) {
@@ -54,7 +65,7 @@ const placeOrderStripe = async (req, res) => {
             items,
             address,
             amount,
-            paymentMethod: "Z",
+            paymentMethod: "Stripe",
             payment: false,
             date: Date.now()
         }

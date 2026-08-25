@@ -13,6 +13,9 @@ const productSchema = new mongoose.Schema({
     quantity: { type: Number, required: true } // ✅ Added quantity field
 });
 
+// Text index for semantic/full-text search across name, description, category
+productSchema.index({ name: 'text', description: 'text', category: 'text', subCategory: 'text' });
+
 const productModel = mongoose.models.product || mongoose.model("product", productSchema);
 
 export default productModel;
