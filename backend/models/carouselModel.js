@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const carouselSchema = new mongoose.Schema({
     image: { type: String, required: true },
-    title: { type: String }, // Optional: e.g., "Winter Sale"
+    title: { type: String },
+    tag: { type: String },   // e.g., "LATEST ARRIVALS"
     link: { type: String },  // Optional: Redirect to /collection
     date: { type: Number, required: true }
 });

@@ -1,5 +1,5 @@
 import express from 'express';
-import { addProduct, listProducts, removeProduct, singleProduct, updateQuantity } from '../controllers/productController.js';
+import { addProduct, listProducts, removeProduct, singleProduct, updateQuantity, searchProducts } from '../controllers/productController.js';
 import adminAuth from '../middleware/adminAuth.js';
 import upload from '../middleware/multer.js';
 
@@ -21,6 +21,9 @@ productRouter.post('/single', singleProduct);
 
 // List Products
 productRouter.get('/list', listProducts);
+
+// ✅ Semantic Search
+productRouter.get('/search', searchProducts);
 
 // ✅ Update Quantity Route
 productRouter.post('/updateQuantity', adminAuth, updateQuantity);

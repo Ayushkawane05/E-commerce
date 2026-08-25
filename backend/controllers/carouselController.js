@@ -5,7 +5,7 @@ import carouselModel from "../models/carouselModel.js";
 const addSlide = async (req, res) => {
     try {
         const imageFile = req.file;
-        const { title, link } = req.body;
+        const { title, link, tag } = req.body;
 
         if (!imageFile) {
             return res.json({ success: false, message: "Image is required" });
@@ -16,6 +16,7 @@ const addSlide = async (req, res) => {
         const slideData = {
             image: imageUpload.secure_url,
             title,
+            tag,
             link,
             date: Date.now()
         };

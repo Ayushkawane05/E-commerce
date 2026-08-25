@@ -1,4 +1,6 @@
 import userModel from "../models/userModel.js"
+import userActivityModel from "../models/userActivityModel.js"
+import productScoreModel from "../models/productScoreModel.js"
 
 // add products to user cart
 const addToCart = async (req, res) => {
@@ -15,6 +17,16 @@ const addToCart = async (req, res) => {
         }
 
         await userModel.findByIdAndUpdate(userId, { cartData })
+
+        // ✅ Track cart_add activity (+5 points)
+        try {
+            await new userActivityModel({ userId, productId: itemId, type: 'cart_add', points: 5 }).save();
+            await productScoreModel.findOneAndUpdate(
+                { productId: itemId },
+                { $inc: { totalPoints: 5, cartCount: 1 }, $set: { lastUpdated: Date.now() } },
+                { upsert: true }
+            );
+        } catch (_) {}
 
         res.json({ success: true, message: "Added To Cart" })
 

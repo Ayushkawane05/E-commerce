@@ -97,5 +97,44 @@ const updateQuantity = async (req, res) => {
     }
 };
 
-export { addProduct, listProducts, removeProduct, singleProduct, updateQuantity };
+// ✅ Semantic Search Products
+const searchProducts = async (req, res) => {
+    try {
+        const { q = '' } = req.query;
+        if (!q.trim()) {
+            const all = await productModel.find({}).limit(20);
+            return res.json({ success: true, products: all });
+        }
+
+        let products = [];
+
+        // Try MongoDB full-text search first
+        try {
+            products = await productModel.find(
+                { $text: { $search: q } },
+                { score: { $meta: 'textScore' } }
+            ).sort({ score: { $meta: 'textScore' } }).limit(20);
+        } catch (_) {}
+
+        // Fuzzy regex fallback if no text-index results
+        if (products.length === 0) {
+            const regex = new RegExp(q.split('').join('.*'), 'i');
+            products = await productModel.find({
+                $or: [
+                    { name: { $regex: regex } },
+                    { description: { $regex: new RegExp(q, 'i') } },
+                    { category: { $regex: new RegExp(q, 'i') } },
+                    { subCategory: { $regex: new RegExp(q, 'i') } }
+                ]
+            }).limit(20);
+        }
+
+        res.json({ success: true, products });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export { addProduct, listProducts, removeProduct, singleProduct, updateQuantity, searchProducts };
 

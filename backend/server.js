@@ -8,7 +8,8 @@ import productRouter from './routes/productRoute.js'
 import cartRouter from './routes/cartRoute.js'
 import orderRouter from './routes/orderRoute.js'
 import carouselRouter from './routes/carouselRouter.js'
-import userRoute from './routes/userRoute.js'
+import activityRouter from './routes/activityRoute.js'
+import marqueeRouter from './routes/marqueeRoute.js'
 
 // App Config
 const app = express()
@@ -26,7 +27,8 @@ app.use('/api/product',productRouter)
 app.use('/api/cart',cartRouter)
 app.use('/api/order',orderRouter)
 app.use('/api/carousel',carouselRouter)
-app.use('/api/user', userRoute)
+app.use('/api/activity',activityRouter)
+app.use('/api/marquee',marqueeRouter)
 
 app.get('/',(req,res)=>{
     res.send("API Working")
